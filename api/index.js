@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 
 const app = express(); //
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const salt = bcrypt.genSaltSync(10);
 const secret = 'askj123kokn123';
@@ -16,6 +17,7 @@ app.use(cors({
 }));
 
 app.use(express.json()); // parsing our body data
+app.use(cookieParser());
 
 mongoose.connect('mongodb+srv://pratyush:UXvb9acvWj3riX0W@cluster0.nk04w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 
@@ -43,12 +45,27 @@ app.post('/login', async (req, res) => {
         // logged in
         jwt.sign({username, id:userDoc._id}, secret, {}, (err,token) => {
             if(err) throw err;
-            res.cookie('token', token).json('ok');
+            res.cookie('token', token).json({
+                id: userDoc._id,
+                username,
+            });
         });
     } else {
         res.status(400).json('wrong credentials');
     }
 
+});
+
+app.get('/profile', (req, res) => {
+    const {token} = req.cookies;
+    jwt.verify(token, secret, {}, (err, info) => {
+        if(err) throw err;
+        res.json(info);
+    });
+});
+
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json('ok');
 });
 
 // mongo DB password - UXvb9acvWj3riX0W Username - pratyush

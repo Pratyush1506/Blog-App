@@ -8,6 +8,7 @@ import Layout from './Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import './App.css'
+import { UserContextProvider } from './context/UserContext';
 
 const router = createBrowserRouter([
  {
@@ -32,7 +33,9 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <UserContextProvider>
+      <RouterProvider router={router} />
+    </UserContextProvider>
   </React.StrictMode>
 );
 

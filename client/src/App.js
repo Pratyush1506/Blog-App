@@ -1,4 +1,5 @@
 import './App.css';
+import { UserContextProvider } from './context/UserContext';
 import Home from './pages/Home';
 
 function App() {
