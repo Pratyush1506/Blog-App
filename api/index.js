@@ -2,11 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
 const User = require('./models/User');
+const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
 
 const app = express(); //
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
+const uploadMiddleware = multer({dest: 'uploads/'});
+const fs = require('fs');
 
 const salt = bcrypt.genSaltSync(10);
 const secret = 'askj123kokn123';
@@ -18,6 +22,7 @@ app.use(cors({
 
 app.use(express.json()); // parsing our body data
 app.use(cookieParser());
+app.use('/uploads', express.static(__dirname + '/uploads'))
 
 mongoose.connect('mongodb+srv://pratyush:UXvb9acvWj3riX0W@cluster0.nk04w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 
@@ -58,6 +63,9 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const {token} = req.cookies;
+    if (!token) {
+        return res.status(401).json({ message: 'User is not logged in' });
+    }
     jwt.verify(token, secret, {}, (err, info) => {
         if(err) throw err;
         res.json(info);
@@ -66,6 +74,49 @@ app.get('/profile', (req, res) => {
 
 app.post('/logout', (req, res) => {
     res.cookie('token', '').json('ok');
+});
+
+
+app.post('/post', uploadMiddleware.single('file') , async (req, res) => {
+    const {originalname, path} = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length-1]; 
+    const newPath = path + '.' +ext;
+    fs.renameSync(path ,newPath);
+    const {token} = req.cookies;
+    // if (!token) {
+    //     return res.status(401).json({ message: 'User is not logged in' });
+    // }
+
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if(err) throw err;
+
+        const {title, summary, content} = req.body;
+
+        const postDoc = await Post.create({
+            title,
+            summary,
+            content,
+            cover: newPath,
+            author: info.id,
+        });
+        res.json(postDoc);
+    });
+});
+
+app.get('/post', async (req, res) => {
+    const posts = await Post.find()
+    .populate('author', ['username'])
+    .sort({createdAt: -1})
+    .limit(20);
+
+    res.json(posts);
+});
+
+app.get('/post/:id', async (req, res) => {
+    const {id} = req.params;
+    const postDoc = await Post.findById(id).populate('author', ['username']);
+    res.json(postDoc);
 });
 
 // mongo DB password - UXvb9acvWj3riX0W Username - pratyush

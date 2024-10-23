@@ -1,18 +1,25 @@
-import React from 'react'
+import React from 'react';
+import {format} from "date-fns";
+import {Link} from 'react-router-dom';
 
-const Post = () => {
+
+const Post = ({_id ,title, summary, cover, content, createdAt, author}) => {
   return (
     <div className="post">
         <div className="image">
-            <img src="https://techcrunch.com/wp-content/uploads/2024/10/Apple-iPad-mini-Apple-Intelligence-Image-Playground-241015.jpg?resize=2048,1524" alt="" />
+          <Link to={`/post/${_id}`}>
+            <img src={'http://localhost:4000/' + cover} alt="" />
+          </Link>
         </div>
         <div className="texts">
-            <h2>New iPad mini brings support for Apple Intelligence and Pencil</h2>
+          <Link to={`/post/${_id}`}>
+            <h2> {title} </h2>
+          </Link>
                 <p className="info">
-                    <a href="/" className="author">Pratyush Jain</a>
-                    <time> 2023-01-06 16.45</time>
+                    <a href="/" className="author"> {author.username} </a>
+                    <time> {format(new Date(createdAt), 'd MMM, YYY HH:mm')} </time>
                 </p>
-                <p className="summary" >The new arrival marks the first major update to the 8.3-inch device since 2021. The A17 Pro, meanwhile, was announced last year, arriving on the iPhone 15 Pro. </p>
+                <p className="summary" > {summary} </p>
         </div>
     </div>
   )

@@ -9,6 +9,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import './App.css'
 import { UserContextProvider } from './context/UserContext';
+import CreatePost from './pages/CreatePost';
+import PostPage from './pages/PostPage';
 
 const router = createBrowserRouter([
  {
@@ -25,6 +27,14 @@ const router = createBrowserRouter([
     {
       path: '/register',
       element: <RegisterPage />
+    },
+    {
+      path: '/create',
+      element: <CreatePost />
+    },
+    {
+      path: '/post/:id',
+      element: <PostPage />
     }
   ]
  }
