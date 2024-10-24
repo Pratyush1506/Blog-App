@@ -103,6 +103,49 @@ app.post('/post', uploadMiddleware.single('file') , async (req, res) => {
         res.json(postDoc);
     });
 });
+app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
+    let newPath = null;
+    if (req.file) {
+      const { originalname, path } = req.file;
+      const parts = originalname.split('.');
+      const ext = parts[parts.length - 1];
+      newPath = path + '.' + ext;
+      try {
+        fs.renameSync(path, newPath);
+      } catch (err) {
+        return res.status(500).json({ message: 'File rename failed' });
+      }
+    }
+  
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+  
+      const { id, title, summary, content } = req.body;
+      const postDoc = await Post.findById(id);
+  
+      const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+      if (!isAuthor) {
+        return res.status(403).json({ message: 'You are not the author' });
+      }
+  
+      // Update the postDoc fields directly
+      postDoc.title = title;
+      postDoc.summary = summary;
+      postDoc.content = content;
+      if (newPath) {
+        postDoc.cover = newPath;
+      }
+  
+      // Save the updated post
+      await postDoc.save();
+  
+      res.json(postDoc);  // Send response after saving
+    });
+  });
+  
 
 app.get('/post', async (req, res) => {
     const posts = await Post.find()
@@ -118,6 +161,7 @@ app.get('/post/:id', async (req, res) => {
     const postDoc = await Post.findById(id).populate('author', ['username']);
     res.json(postDoc);
 });
+
 
 // mongo DB password - UXvb9acvWj3riX0W Username - pratyush
 // mongoDB connection string - mongodb+srv://pratyush:UXvb9acvWj3riX0W@cluster0.nk04w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

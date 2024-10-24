@@ -11,6 +11,7 @@ import './App.css'
 import { UserContextProvider } from './context/UserContext';
 import CreatePost from './pages/CreatePost';
 import PostPage from './pages/PostPage';
+import EditPage from './pages/EditPost';
 
 const router = createBrowserRouter([
  {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
     {
       path: '/post/:id',
       element: <PostPage />
+    },
+    {
+      path: '/edit/:id',
+      element: <EditPage />
     }
   ]
  }

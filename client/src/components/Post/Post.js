@@ -17,7 +17,7 @@ const Post = ({_id ,title, summary, cover, content, createdAt, author}) => {
           </Link>
                 <p className="info">
                     <a href="/" className="author"> {author.username} </a>
-                    <time> {format(new Date(createdAt), 'd MMM, YYY HH:mm')} </time>
+                    <time> {format(new Date(createdAt), 'd MMM, yyy HH:mm')} </time>
                 </p>
                 <p className="summary" > {summary} </p>
         </div>

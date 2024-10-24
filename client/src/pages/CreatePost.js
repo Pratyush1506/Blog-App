@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ReactQuill from 'react-quill';
-import {Navigate} from 'react-router-dom'
+import {Navigate} from 'react-router-dom';
 import 'react-quill/dist/quill.snow.css';
+import Editor from '../components/Editor/Editor';
 
 
 const modules = {
@@ -54,7 +54,7 @@ const CreatePost = () => {
     }
 
   return (
-    <form onSubmit={createNewPost} action="/">
+    <form onSubmit={createNewPost}>
         <input 
             type="title" 
             placeholder={'Title'} 
@@ -71,12 +71,7 @@ const CreatePost = () => {
             type="file"  
             onChange={e => setFiles(e.target.files)}
         />
-        <ReactQuill 
-            value={content} 
-            onChange={newValue => setContent(newValue)} 
-            modules={modules} 
-            formats={formats} 
-        />
+        <Editor onChange={setContent} value={content} />
         <button style={{marginTop: '5px'}} >Create Post</button>
     </form>
   )
