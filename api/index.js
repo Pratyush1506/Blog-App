@@ -11,9 +11,10 @@ const cookieParser = require('cookie-parser');
 const multer = require('multer');
 const uploadMiddleware = multer({dest: 'uploads/'});
 const fs = require('fs');
+require("dotenv").config();
 
 const salt = bcrypt.genSaltSync(10);
-const secret = 'askj123kokn123';
+const secret = process.env.SECRET;
 
 app.use(cors({
     credentials:true,
@@ -24,7 +25,7 @@ app.use(express.json()); // parsing our body data
 app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'))
 
-mongoose.connect('mongodb+srv://pratyush:UXvb9acvWj3riX0W@cluster0.nk04w.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(process.env.MONGODBSTRING);
 
 
 app.post('/register', async (req, res) => {
